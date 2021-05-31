@@ -1,55 +1,134 @@
 <template>
   <div>
+      <!-- Create Reports  -->
     <b-card title="Create Report 🚀">
-      <!-- <b-card-text>All the best for your new project.</b-card-text>
-      <b-card-text>Please make sure to read our <b-link
-        href="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/"
-        target="_blank"
-      >
-        Template Documentation
-      </b-link> to understand where to go from here and how to use our template.</b-card-text> -->
-      <b-form-textarea
-      id="textarea"
-      v-model="text"
-      placeholder="Create report..."
-      rows="3"
-      max-rows="6">
-      </b-form-textarea>
-      <!-- <pre class="mt-3 mb-0">{{ text }}</pre> -->
-       <b-button variant="primary">Post</b-button>
+      <b-form @submit.prevent="submit">
+        <b-from-group>
+          <b-form-textarea
+            id="textarea"
+            v-model="message"
+            placeholder="Create report..."
+            rows="3"
+            max-rows="6"
+          />
+          <b-button
+            variant="primary"
+            @click="submit"
+          >
+            Post
+          </b-button>
+        </b-from-group>
+      </b-form>
     </b-card>
 
-    <b-card title="Reports 🔒">
-      <!-- <b-card->We carefully crafted JWT flow so you can implement JWT with ease and with minimum efforts.</b-card->
-      <b-card-text>Please read our  JWT Documentation to get more out of JWT authentication.</b-card-text> -->
-      <pre class="mt-3 mb-0">{{ text }}</pre>
-    </b-card>
+    <!-- Edit/Delete Reports  -->
+    <div
+      v-for="report in reports"
+      :key="report.id"
+      class="report-content"
+    >
+      <b-card>
+        <!-- title="Reports 🔒" -->
+        <b-header><strong>{{ report.user.first_name }} {{ report.user.last_name }}</strong>
+          {{ report.created_at }}
+          <b-button-group>
+            <b-dropdown>
+              <b-dropdown-item @click="editButton(report.id)">Edit</b-dropdown-item>
+              <b-dropdown-divider />
+              <b-dropdown-item
+                @click="delButton(report.id)"
+              >Delete</b-dropdown-item>
+            </b-dropdown>
+          </b-button-group>
+        </b-header>
+        <hr>
+        <p>{{ report.message }}</p>
+        <b-form @submit.prevent="update">
+        <b-from-group>
+        <div :id="report.id.toString()" style="display:none">
+             <b-form-textarea
+            id="textarea"
+            placeholder="Edit report..."
+            rows="3"
+            v-model="report.message"
+            max-rows="6"
+          />
+          <b-button
+            variant="primary"
+            @click="update(report.id, report.message)"
+          >
+            Update Message
+          </b-button>
+        </div>
+        </b-from-group>
+      </b-form>
+      </b-card>
+    </div>
   </div>
 </template>
 
 <script>
-// import { BCard, BCardText, BLink } from 'bootstrap-vue'
-import { BCard, BFormTextarea, BButton } from 'bootstrap-vue'
+import {
+  BCard,
+  BFormTextarea,
+  BButton,
+  BDropdown,
+  BDropdownItem,
+  BDropdownDivider,
+  BButtonGroup,
+} from 'bootstrap-vue'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
     BCard,
     BFormTextarea,
     BButton,
-    // BCardText,
-    // BLink,
+    BDropdown,
+    BDropdownItem,
+    BDropdownDivider,
+    BButtonGroup,
   },
   data() {
     return {
-      text: '',
+      message: '',
     }
+  },
+  mounted() {
+    this.$store.dispatch('users/getReports')
+  },
+  methods: {
+    submit() {
+      this.$store.dispatch('users/storeReport', this.message)
+      this.message = ''
+    },
+    delButton(id) {
+      this.$store.dispatch('users/deleteReport', id)
+    },
+    editButton(reportId) {
+      document.getElementById(reportId).style.display = 'block'
+    },
+    update(id, message) {
+      this.$store.dispatch('users/updateReport', { id, message })
+    },
+  },
+  computed: {
+    ...mapGetters({
+      reports: 'users/getReports',
+    }),
   },
 }
 </script>
 
 <style>
-button{
-    margin: 10px;
-    float: right;
+button {
+  margin: 10px;
+  float: right;
 }
+
+.dropdown {
+    float: right;
+
+}
+
 </style>
