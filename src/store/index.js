@@ -5,7 +5,8 @@ import Vuex from 'vuex'
 import app from './app'
 import appConfig from './app-config'
 import verticalMenu from './vertical-menu'
-import users from './users'
+// import users from './users'
+import reports from './module/reports'
 
 Vue.use(Vuex)
 
@@ -14,7 +15,7 @@ export default new Vuex.Store({
     app,
     appConfig,
     verticalMenu,
-    users,
+    reports,
   },
   strict: process.env.DEV,
 })

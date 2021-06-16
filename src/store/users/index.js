@@ -34,7 +34,6 @@ export default {
         })
     },
     async deleteReport({ commit }, id) {
-      // mo dawat ug commit
       api.delete(`/report/${id}`).then(response => {
         console.log(response)
         commit('DELETE_REPORT', id)
